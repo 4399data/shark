@@ -116,6 +116,10 @@ class TableScanOperator extends TopOperator[TableScanDesc] {
     val databaseName = tableNameSplit(0)
     val tableName = tableNameSplit(1)
 
+    val _properties = tableDesc.getProperties()
+    val _tableReaderClass = _properties.getProperty("shark.table.reader.class")
+    logWarning(_tableReaderClass)
+
     // There are three places we can load the table from.
     // 1. Spark heap (block manager), accessed through the Shark MemoryMetadataManager
     // 2. Tachyon table
@@ -136,6 +140,24 @@ class TableScanOperator extends TopOperator[TableScanDesc] {
         tableReader.makeRDDForPartitionedTable(parts, Some(createPrunedRdd _))
       } else {
         tableReader.makeRDDForTable(table, Some(createPrunedRdd _))
+      }
+    } else if (_tableReaderClass != null && _tableReaderClass.length > 0) {
+      try {
+        val _class = Class.forName(_tableReaderClass)
+        val _tableReader = _class.getConstructor(tableDesc.getClass, localHConf.getClass).newInstance(tableDesc, localHConf)
+
+        if (!_tableReader.isInstanceOf[TableReader]) {
+          throw new IllegalArgumentException("shark.table.reader.class:" + _tableReaderClass + " is not TableReader subclass")
+        } else {
+          val tableReader = _tableReader.asInstanceOf[TableReader]
+          if (table.isPartitioned) {
+            tableReader.makeRDDForPartitionedTable(parts)
+          } else {
+            tableReader.makeRDDForTable(table)
+          }
+        }
+      } catch {
+        case e : Exception => throw new RuntimeException(e)
       }
     } else {
       // Table is a Hive table on HDFS (or other Hadoop storage).

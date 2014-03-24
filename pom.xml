@@ -26,8 +26,8 @@
     <version>11</version>
   </parent>
   <groupId>edu.berkeley.cs.amplab</groupId>
-  <artifactId>shark-parent</artifactId>
-  <version>0.8.1-SNAPSHOT</version>
+  <artifactId>shark_2.9.3</artifactId>
+  <version>0.8.1</version>
   <packaging>jar</packaging>
   <name>Shark Project Parent POM</name>
   <url>http://shark.cs.berkeley.edu/</url>
@@ -69,7 +69,7 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
     <tachyon.sourcedir>tachyon_disabled</tachyon.sourcedir>
-    <spark.version>0.8.1-incubating-SNAPSHOT</spark.version>
+    <spark.version>0.8.1-incubating</spark.version>
     <hive.version>0.9.0-amplab-4</hive.version>
 
     <java.version>1.6</java.version>
@@ -79,6 +79,17 @@
   </properties>
 
   <repositories>
+    <repository>
+      <id>Ladder</id>
+      <name>Ladder Repository</name>
+      <url>http://10.0.3.25:8099/nexus/content/repositories/thirdparty/</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
     <repository>
       <id>Typesafe-repo</id>
       <name>Typesave Repository</name>
@@ -175,13 +186,13 @@
       <version>1.10.0</version>
       <scope>test</scope>
     </dependency>
-    <dependency>
+    <!--dependency>
       <groupId>edu.berkeley.cs.shark</groupId>
       <artifactId>hive-exec</artifactId>
       <version>${hive.version}</version>
       <classifier>test</classifier>
       <scope>test</scope>
-    </dependency>
+    </dependency-->
     <dependency>
       <groupId>edu.berkeley.cs.shark</groupId>
       <artifactId>hive-jdbc</artifactId>
@@ -193,6 +204,12 @@
       <artifactId>hbase</artifactId>
       <version>0.94.5</version>
       <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>mysql</groupId>
+      <artifactId>mysql-connector-java</artifactId>
+      <version>5.1.27</version>
     </dependency>
   </dependencies>
 
@@ -247,6 +264,7 @@
         <artifactId>scalatest-maven-plugin</artifactId>
         <version>1.0-M2</version>
         <configuration>
+          <skipTests>true</skipTests>
           <reportsDirectory>${project.build.directory}/surefire-reports
           </reportsDirectory>
           <junitxml>.</junitxml>
@@ -351,6 +369,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>build-helper-maven-plugin</artifactId>
+        <version>1.8</version>
         <executions>
           <execution>
             <id>add-scala-sources</id>
@@ -389,7 +408,7 @@
             <id>dist</id>
             <phase>package</phase>
             <goals>
-              <goal>single</goal>
+              <goal>assembly</goal>
             </goals>
             <configuration>
               <descriptors>
@@ -413,7 +432,7 @@
         <dependency>
           <groupId>org.tachyonproject</groupId>
           <artifactId>tachyon</artifactId>
-          <version>0.3.0-SNAPSHOT</version>
+          <version>0.3.0</version>
           <exclusions>
             <exclusion>
               <groupId>de.javakaffee</groupId>

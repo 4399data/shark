@@ -1,3 +1,10 @@
+针对shark-0.8.1进行了二次开发
+修改的文件：
+  src/main/scala/shark/execution/TableScanOperator.scala
+    通过读取hive表属性shark.table.reader.class来加载对应的TableReader类，获取RDD；
+    只要将对应的TableReader类所在的jar放在{SHARK_HOME}/lib目录下，重新启动sharkserver即可；
+    例子可见[shark-tablereader-plugin](https://github.com/4399data/shark-tablereader-plugin)
+
 # Shark (Hive on Spark)
 
 Shark is a large-scale data warehouse system for Spark designed to be compatible with
